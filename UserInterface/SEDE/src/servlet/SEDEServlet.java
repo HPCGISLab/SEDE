@@ -39,30 +39,36 @@ public class SEDEServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String action = request.getParameter("action");		
+		String action = request.getParameter("action");
 		if (action.equalsIgnoreCase("submitsurvey")) {
-			String responsejson=submitsurvey(request);
-			String url="http://geostor.geog.kent.edu:8080/SEDE/survey_response.jsp?surveyid="+responsejson;
-			request.setAttribute("url",url);
-			request.getRequestDispatcher("survey_created.jsp").forward(request, response);
-		} 
-		else {
+			String responsejson = submitsurvey(request);
+			String url = request.getScheme() + "://" + request.getServerName()
+					+ ":" + request.getServerPort()
+					+ "/SEDE/login/survey_response.jsp?surveyid="
+					+ responsejson;
+			request.setAttribute("url", url);
+			request.getRequestDispatcher("survey_created.jsp").forward(request,
+					response);
+		} else {
 			String responseJSON = null;
 			if (action.equalsIgnoreCase("getsliderdates")) {
 				responseJSON = getsliderdates(request);
-			} /*
-			 * else if (action.equalsIgnoreCase("getpointhexdata")) {
-			 * responseJSON = getpointhexdata(request); }
-			 */else if (action.equalsIgnoreCase("searchword")) {
-				responseJSON = getsearchword(request);
 			} else if (action.equalsIgnoreCase("submitsurvey")) {
 				responseJSON = submitsurvey(request);
 			} else if (action.equalsIgnoreCase("savesurveyresponse")) {
 				responseJSON = savesurveyresponse(request);
 			} else if (action.equalsIgnoreCase("getsurvey")) {
 				responseJSON = getsurvey(request);
-			} else if (action.equalsIgnoreCase("getmapdata")) {
-				responseJSON = getmapdata(request);
+			} else if (action.equalsIgnoreCase("getmapdatafordisplay")) {
+				responseJSON = getmapdatafordisplay(request);
+			} else if (action.equalsIgnoreCase("getsurveyresponse")) {
+				responseJSON = getsurveyresponse(request);
+			} else if (action.equalsIgnoreCase("updatesurveyresponse")) {
+				responseJSON = updatesurveyresponse(request);
+			} else if (action.equalsIgnoreCase("getweatherevents")) {
+				responseJSON = getweatherevents(request);
+			} else if (action.equalsIgnoreCase("getdictionarycategories")) {
+				responseJSON = getdictionarycategories(request);
 			}
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
@@ -73,8 +79,22 @@ public class SEDEServlet extends HttpServlet {
 		}
 	}
 
-	private String getmapdata(HttpServletRequest request) {
-		return TweetParser.getmapdata(request);
+	private String getweatherevents(HttpServletRequest request) {
+		return TweetParser.getweatherevents(request);
+	}
+
+	private String updatesurveyresponse(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return TweetParser.updatesurveyresponse(request);
+	}
+
+	private String getsurveyresponse(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return TweetParser.getsurveyresponse(request);
+	}
+
+	private String getmapdatafordisplay(HttpServletRequest request) {
+		return TweetParser.getmapdatafordisplay(request);
 	}
 
 	private String getsurvey(HttpServletRequest request) {
@@ -89,17 +109,11 @@ public class SEDEServlet extends HttpServlet {
 		return TweetParser.submitsurvey(request);
 	}
 
-	private String getsearchword(HttpServletRequest request) {
-		return TweetParser.getsearchword(request);
-	}
-
-	/*
-	 * private String getpointhexdata(HttpServletRequest request) { return
-	 * TweetParser.getpointhexdata(request); }
-	 */
-
 	private String getsliderdates(HttpServletRequest request) {
 		return TweetParser.getsliderdates(request);
 	}
 
+	private String getdictionarycategories(HttpServletRequest request) {
+		return TweetParser.getdictionarycategories(request);
+	}
 }
