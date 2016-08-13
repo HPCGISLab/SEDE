@@ -13,7 +13,28 @@ public class SurveyPojo {
 	}
 	private String email;
     private String query;
-    private ArrayList<ArrayList<String>> questions;
+    private String codebookname;
+    private int dictcategid;
+    private boolean dictused;
+    public String getCodebookname() {
+		return codebookname;
+	}
+	public void setCodebookname(String codebookname) {
+		this.codebookname = codebookname;
+	}
+	public int getDictcategid() {
+		return dictcategid;
+	}
+	public void setDictcategid(int dictcategid) {
+		this.dictcategid = dictcategid;
+	}
+	public boolean isDictused() {
+		return dictused;
+	}
+	public void setDictused(boolean dictused) {
+		this.dictused = dictused;
+	}
+	private ArrayList<ArrayList<String>> questions;
     private int hashcode;
     private Timestamp created_at;
 	public Timestamp getCreated_at() {
