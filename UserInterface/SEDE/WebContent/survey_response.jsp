@@ -25,41 +25,46 @@
 <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 <script src="js/ie-emulation-modes-warning.js"></script>
 <script charset="utf-8" src="js/d3.min.js" type="text/javascript"></script>
+<script src="js/jquery/jquery.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>
 <script>
-	var tweets, categ, surveyid, email, surveyjson;
-	function getsurvey(surveyidhash) {
+	var tweets, categ, surveyid, email, surveyjson, surveydetails, surveyresponse;
+	function getsurvey(surveyidhash,emailid) {
+		var myVar = setInterval(updateinterval, 60000);
+		email = emailid;
 		var http = new XMLHttpRequest();
-		http.open("POST", "http://geostor.geog.kent.edu:8080/SEDE/SEDEServlet", false);
+		http.open("POST", "/SEDE/SEDEServlet",
+				false);
 		http.setRequestHeader("Content-type",
 				"application/x-www-form-urlencoded");
-		http.send("action=getsurvey&surveyhash=" + surveyidhash);
+		http.send("action=getsurveyresponse&surveyhash=" + surveyidhash
+				+ "&email=" + email);
 		surveyjson = JSON.parse(http.responseText);
-		email = "eshook@kent.edu";
-		surveyid = surveyjson.surveydata.surveyid;
-		tweets = surveyjson.tweets;
-		categ = surveyjson.surveydata.categ;
+		surveydetails = surveyjson.surveydetails;
+		surveyresponse = surveyjson.surveyresponse;
 		var tooltip = d3.select("body").append("div").style("position",
 				"absolute").style("z-index", "10")
 				.style("visibility", "hidden").text("").attr("class",
 						"span2 well").attr("id", "tooltipdiv");
 		var header = [ "Sl#", "Tweet" ];
-		for (var i = 0; i < categ.length; i++) {
-			header.push(categ[i]);
+		for (var i = 0; i < surveydetails.length; i++) {
+			header.push(surveydetails[i]);
 		}
 		var container = d3.select("body").append("div").attr("class",
 				"container");
 		var table = container.append("table").attr("class",
-				"table table-striped");
+				"table table-striped").attr("id","myTable");
 		var headerrow = table.append("thead").append("tr");
 		var headerdata = headerrow.selectAll("th").data(header).enter().append(
 				"th").text(function(d, i) {
 			if (i < 2)
 				return d;
 			else
-				return d.categ;
+				return d[0];
 		}).on('mouseover', function(d, i) {
 			if (i >= 2) {
-				tooltip.text(d.desc);
+				tooltip.text(d[1]);
 				return tooltip.style("visibility", "visible");
 			}
 		}).on('mouseout', function(d, i) {
@@ -85,7 +90,8 @@
 			}
 		});
 		var tbody = table.append("tbody");
-		var trows = tbody.selectAll("tr").data(tweets).enter().append("tr");
+		var trows = tbody.selectAll("tr").data(surveyresponse).enter().append(
+				"tr");
 		var tdata = trows.selectAll("td").data(function(h, k) {
 			var rowobj = [];
 			for (var ind = 0; ind < header.length; ind++)
@@ -96,40 +102,66 @@
 		}).enter().append("td").html(function(s, j) {
 			if (j < 2)
 				return s;
-			else
-				return "<input type ='checkbox' name="+s+">";
+			else {
+				var respid = surveyresponse[s].responseid;
+				var resp = surveyresponse[s].responses[j - 2];
+				if (resp == 0)
+					return "<input type ='checkbox' name="+respid+">";
+				else if (resp == 1) {
+					return "<input type ='checkbox' name="+respid+" checked>";
+				}
+			}
 		});
+		$('#myTable').DataTable( {
+		    fixedHeader: true
+		} );
 		var formdata = container.append("form").attr("name", "surveyresp")
-				.attr("action", "http://geostor.geog.kent.edu:8080/SEDE/SEDEServlet").attr(
-						"method", "post").on("submit", function() {
-					submitsurveyresponse();
+				.attr("action",
+						"/SEDE/SEDEServlet")
+				.attr("method", "post").on("submit", function() {
+					updatesurveyresponse();
 				});
 		formdata.append("input").attr("type", "hidden")
 				.attr("name", "datajson").attr("value", "");
 		formdata.append("input").attr("type", "hidden").attr("name", "action")
-				.attr("value", "savesurveyresponse");
+				.attr("value", "updatesurveyresponse");
 		formdata.append("button").attr("class", "btn btn-primary").text(
 				"Submit");
 	}
-	function submitsurveyresponse() {
+	
+	function updateinterval(){
+		var http = new XMLHttpRequest();
+		http.open("POST", "/SEDE/SEDEServlet",
+				false);
+		http.setRequestHeader("Content-type",
+				"application/x-www-form-urlencoded");
+		http.send("action=updatesurveyresponse&datajson=" + JSON.stringify(getresponsedata()));
+	}
+	
+	function getresponsedata(){
+		var survey_response_data={};
 		var responsedata = [];
-		for (var i = 0; i < tweets.length; i++) {
-			var rows = document.getElementsByName(i.toString());
+		for (var i = 0; i < surveyresponse.length; i++) {
+			var Survey_Response = {};
+			Survey_Response.responseid = surveyresponse[i].responseid;
+			var rows = document.getElementsByName(surveyresponse[i].responseid
+					.toString());
 			rowdata = [];
 			for (var j = 0; j < rows.length; j++)
 				rowdata.push(+rows[j].checked);
-			responsedata.push(rowdata);
+			Survey_Response.responses = rowdata;
+			responsedata.push(Survey_Response);
 		}
-		var respobj = {};
-		respobj.surveyid = surveyid;
-		respobj.email = email;
-		respobj.survey_response = responsedata;
-		respobj.tweets = tweets;
-		document.surveyresp.datajson.value = JSON.stringify(respobj);		
+		survey_response_data.survey_response=responsedata;
+		return survey_response_data;
+	}
+	function updatesurveyresponse() {
+		var survey_response_data=getresponsedata();
+		document.surveyresp.datajson.value = JSON.stringify(survey_response_data);
 	}
 </script>
 </head>
-<body onload="getsurvey('${param.surveyid}')">
+<body onload="getsurvey('${requestScope.surveyid}','${requestScope.email}')">
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
