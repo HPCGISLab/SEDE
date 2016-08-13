@@ -4,7 +4,14 @@ public class MapDataRequestPojo {
     private SpatialDataPojo spatialdata;
     private TemporalDataPojo temporaldata;
     private TextualDataPojo textualdata;
-    private HexMapDataPojo hexmapcenters;
+    private DictDataPojo dictdata;
+    public DictDataPojo getDictdata() {
+		return dictdata;
+	}
+	public void setDictdata(DictDataPojo dictdata) {
+		this.dictdata = dictdata;
+	}
+	//private HexMapDataPojo hexmapcenters;
 	public SpatialDataPojo getSpatialdata() {
 		return spatialdata;
 	}
@@ -15,12 +22,12 @@ public class MapDataRequestPojo {
 		return textualdata;
 	}
 	
-	public HexMapDataPojo getHexmapcenters() {
+	/*public HexMapDataPojo getHexmapcenters() {
 		return hexmapcenters;
-	}
-	public void setHexmapcenters(HexMapDataPojo hexmapcenters) {
+	}*/
+	/*public void setHexmapcenters(HexMapDataPojo hexmapcenters) {
 		this.hexmapcenters = hexmapcenters;
-	}
+	}*/
 	public void setSpatialdata(SpatialDataPojo spatialdata) {
 		this.spatialdata = spatialdata;
 	}
