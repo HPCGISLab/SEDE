@@ -8,6 +8,16 @@ package data;
 public class Word implements Comparable<Word>{
 	private String word;
 	private Integer count;
+	private boolean common=false;
+	public boolean isCommon() {
+		return common;
+	}
+	public void setCommon(boolean common) {
+		this.common = common;
+	}
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 	@Override
 	public int compareTo(Word other) {
 		return -(this.count.compareTo(other.getCount()));
