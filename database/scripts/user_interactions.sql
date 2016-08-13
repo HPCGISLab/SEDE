@@ -1,22 +1,5 @@
 --
--- PostgreSQL database dump
---
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
-SET search_path = public, pg_catalog;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
---
--- Name: user_interactions; Type: TABLE; Schema: public; Owner: jajayaku; Tablespace: 
+-- Name: user_interactions; Type: TABLE; Schema: public; Owner: sede; Tablespace:
 --
 
 CREATE TABLE user_interactions (
@@ -26,10 +9,10 @@ CREATE TABLE user_interactions (
 );
 
 
-ALTER TABLE user_interactions OWNER TO jajayaku;
+ALTER TABLE user_interactions OWNER TO sede;
 
 --
--- Name: user_interactions_pkey; Type: CONSTRAINT; Schema: public; Owner: jajayaku; Tablespace: 
+-- Name: user_interactions_pkey; Type: CONSTRAINT; Schema: public; Owner: sede; Tablespace:
 --
 
 ALTER TABLE ONLY user_interactions
@@ -37,14 +20,8 @@ ALTER TABLE ONLY user_interactions
 
 
 --
--- Name: user_interactions_reference_tweetid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jajayaku
+-- Name: user_interactions_reference_tweetid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sede
 --
 
 ALTER TABLE ONLY user_interactions
     ADD CONSTRAINT user_interactions_reference_tweetid_fkey FOREIGN KEY (reference_tweetid) REFERENCES tweets(tweetid);
-
-
---
--- PostgreSQL database dump complete
---
-
