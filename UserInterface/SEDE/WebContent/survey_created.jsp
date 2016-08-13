@@ -28,7 +28,10 @@
 
 </head>
 <body>
-	<span>Thank you for creating the survey</span><br>
-	<span>Your survey url is: <a href=<c:out value="${requestScope.url}" />><c:out value="${requestScope.url}" /></a></span>
+	<span>Thank you for creating the survey</span>
+	<br>
+	<span>Your survey url is: <a
+		href=<c:out value="${requestScope.url}" />><c:out
+				value="${requestScope.url}" /></a></span>
 </body>
 </html>
