@@ -29,7 +29,13 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.css"/>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>
 <script>
-	var tweets, categ, surveyid, email, surveyjson, surveydetails, surveyresponse;
+	var tweets, categ, surveyid, email, surveyjson, surveydetails, surveyresponse,tablemap=d3.map();
+	function updatecheckboxchange(checkbox){
+		var responseid=checkbox.id.split("_")[0];
+		var resp_idx=checkbox.id.split("_")[1];
+		var responses=tablemap.get(responseid);
+		responses[parseInt(resp_idx)]=+checkbox.checked;
+	}
 	function getsurvey(surveyidhash,emailid) {
 		var myVar = setInterval(updateinterval, 60000);
 		email = emailid;
@@ -93,6 +99,7 @@
 		var trows = tbody.selectAll("tr").data(surveyresponse).enter().append(
 				"tr");
 		var tdata = trows.selectAll("td").data(function(h, k) {
+			tablemap.set(h.responseid,h.responses);
 			var rowobj = [];
 			for (var ind = 0; ind < header.length; ind++)
 				rowobj.push(k);
@@ -106,9 +113,9 @@
 				var respid = surveyresponse[s].responseid;
 				var resp = surveyresponse[s].responses[j - 2];
 				if (resp == 0)
-					return "<input type ='checkbox' name="+respid+">";
+					return "<input type ='checkbox' id="+respid+"_"+(j-2)+" onchange='updatecheckboxchange(this)'>";
 				else if (resp == 1) {
-					return "<input type ='checkbox' name="+respid+" checked>";
+					return "<input type ='checkbox' id="+respid+"_"+(j-2)+" onchange='updatecheckboxchange(this)' checked >";
 				}
 			}
 		});
@@ -141,15 +148,11 @@
 	function getresponsedata(){
 		var survey_response_data={};
 		var responsedata = [];
-		for (var i = 0; i < surveyresponse.length; i++) {
+		var tablemapkeys=tablemap.keys();
+		for (var i = 0; i < tablemapkeys.length; i++) {
 			var Survey_Response = {};
-			Survey_Response.responseid = surveyresponse[i].responseid;
-			var rows = document.getElementsByName(surveyresponse[i].responseid
-					.toString());
-			rowdata = [];
-			for (var j = 0; j < rows.length; j++)
-				rowdata.push(+rows[j].checked);
-			Survey_Response.responses = rowdata;
+			Survey_Response.responseid = tablemapkeys[i];
+			Survey_Response.responses = tablemap.get(tablemapkeys[i]);
 			responsedata.push(Survey_Response);
 		}
 		survey_response_data.survey_response=responsedata;
